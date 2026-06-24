@@ -42,12 +42,17 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
     body {
       font-family: var(--font-default);
-      background: var(--c5);
+      background: #E0E0E0;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       min-height: 100vh;
     }
 
@@ -58,6 +63,9 @@
       background: var(--c5);
       position: relative;
       overflow: hidden;
+      transform-origin: center center;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.15);
+      border-radius: 8px;
     }
 
     /* ===== 顶部状态栏占位 ===== */
@@ -756,7 +764,7 @@
     const existingTaxRow = document.getElementById('taxNoRow');
     if (show && !existingTaxRow) {
       const rows = infoCard.querySelectorAll('.info-row');
-      const titleRow = rows[4]; // 发票抬头行（第5行：状态→订单编号→下单时间→发票类型→发票抬头→发票内容）
+      const titleRow = rows[4];
       const taxRow = document.createElement('div');
       taxRow.className = 'info-row';
       taxRow.id = 'taxNoRow';
@@ -802,7 +810,6 @@
       showToast('发票未生成，请稍后重试');
       return;
     }
-    // 模拟网络异常
     if (document.getElementById('networkModal').classList.contains('willShow')) {
       document.getElementById('networkModal').classList.add('show');
       document.getElementById('networkModal').classList.remove('willShow');
@@ -838,11 +845,9 @@
 
   // ===== 状态切换 =====
   function switchStatus(status, btn) {
-    // 更新面板按钮状态
     document.querySelectorAll('#demoPanel button[data-status]').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
 
-    // 隐藏所有异常页面
     document.getElementById('normalContent').style.display = 'block';
     document.getElementById('actionArea').style.display = 'flex';
     document.getElementById('loadingPage').classList.remove('show');
@@ -899,6 +904,21 @@
 
     render();
   }
+
+  // ===== 自适应缩放（750x1624 设计稿适配任意视口） =====
+  const DESIGN_WIDTH = 750;
+  const DESIGN_HEIGHT = 1624;
+
+  function fitScreen() {
+    const frame = document.getElementById('app');
+    const scaleX = window.innerWidth / DESIGN_WIDTH;
+    const scaleY = window.innerHeight / DESIGN_HEIGHT;
+    const scale = Math.min(scaleX, scaleY, 1);
+    frame.style.transform = `scale(${scale})`;
+  }
+
+  window.addEventListener('resize', fitScreen);
+  fitScreen();
 
   // ===== 初始化 =====
   render();
